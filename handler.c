@@ -57,6 +57,7 @@ void handleFirstLine(const char *separator, char *token, char *line_buffer,
                      bool *is_first_line, bool *is_valid_request,
                      REQUEST *request) {
     int iterator = 0;
+    (void)fd;
     token = strtok(line_buffer, separator);
 
     while (token != NULL) {
@@ -130,7 +131,8 @@ void send_error(int status_code, int socket_fd, bool is_valid_request,
 }
 
 /** This code has been referenced from CS631 APUE class notes apue-code/09 */
-void handleConnection(int fd, struct sockaddr_in6 client, struct flags_struct flags) {
+void handleConnection(int fd, struct sockaddr_in6 client,
+                      struct flags_struct flags) {
     /** TODO: Integration of logger will use the rip */
     const char *rip;
     char claddr[INET6_ADDRSTRLEN];
@@ -297,17 +299,19 @@ void handleConnection(int fd, struct sockaddr_in6 client, struct flags_struct fl
      * removing ~ 1.2 else call readdirs
      * 2. -c is there
      * */
+    execute_file(request.path, fd, is_valid_request, &response, response_string,
+                 flags);
     if (!flags.c_flag) {
         if (strncmp(request.path, "/~", strlen("/~")) == 0) {
             char file_path[strlen(request.path) - 2];
             (void)strncpy(file_path, request.path + 2,
                           strlen(request.path) - 2);
             // getuserdir(file_path, fd, is_valid_request, &response,
-                    //    response_string);
+            //    response_string);
         } else {
             puts(request.path);
             // readdirs(request.path, fd, is_valid_request, &response,
-                    //  response_string);
+            //  response_string);
         }
     }
 

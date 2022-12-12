@@ -123,6 +123,26 @@ void selectSocket(int socket, struct flags_struct flags) {
     }
 }
 
+int isPresentOrNot(const char *path_name) {
+    struct stat st;
+
+    if (stat((const char *)path_name, &st) != 0) {
+        printf("\n Error getting information, of directory \n");
+        return (-1);
+        // return (-1)
+    }
+
+    if (st.st_mode & S_IFDIR) {
+        printf("\n Is a directory \n");
+        return (1);
+    } else {
+        printf(
+            "\n Is regular File, please give a directory as an option to -c  "
+            "\n");
+        return (-1);
+    }
+}
+
 int main(int argc, char **argv) {
     if (signal(SIGCHLD, reap) == SIG_ERR) {
         perror("signal");
@@ -142,6 +162,10 @@ int main(int argc, char **argv) {
                 (void)strncpy(flags.cdi_dir_arg, optarg, strnlen(optarg, PATH_MAX));
                 flags.cdi_dir_arg[strnlen(optarg, PATH_MAX)] = '\0';
                 flags.c_flag = 1;
+                int temp;
+                if ((temp = isPresentOrNot(flags.cdi_dir_arg)) != 1) {
+                    exit(-1);
+                }
                 break;
             case 'd':
                 flags.d_flag = 1;
